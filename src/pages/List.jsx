@@ -96,7 +96,7 @@ const List = () => {
 };
 
 const Container = styled.div`
-  background-image: linear-gradient(to top, #fad0c4 0%, #ffd1ff 100%);
+  background-image: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
   min-height: 100vh; 
 `;
 
