@@ -21,14 +21,14 @@ const Button = styled.button`
   }
 `;
 
-const HomeButton = () => {
+const GoToAddBtn = () => {
     const navigateTo = useNavigate();
 
     const handleNavigateHome = () => {
-        navigateTo("/");
+        navigateTo("/add");
     };
 
-    return <Button onClick={handleNavigateHome}>Вернуться на главную</Button>;
+    return <Button onClick={handleNavigateHome}>Добавить пользователя</Button>;
 };
 
-export default HomeButton;
+export default GoToAddBtn;

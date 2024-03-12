@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Add from './pages/Add';
 import List from './pages/List';
 
+
 function App() {
   const router = createBrowserRouter([
     {
@@ -21,9 +22,10 @@ function App() {
   ])
 
   return (
-      <div className="App">
-        <RouterProvider router={router}/>
-      </div>
+        <div className="App">
+          <RouterProvider router={router}/>
+        </div>
+
   );
 }
 

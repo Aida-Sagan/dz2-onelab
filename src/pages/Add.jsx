@@ -1,5 +1,7 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { addItem  } from '../actions/actions';
 
 import styled from "styled-components";
 import Modal from "react-modal";
@@ -9,11 +11,11 @@ export default function Add() {
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [phone, setPhone] = useState('');
-
     const [modalIsOpen, setModalIsOPen] = useState(false);
 
     const navigateTo = useNavigate();
 
+    const dispatch = useDispatch();
     const handleNameChange = (e) => {
         setName(e.target.value);
     }
@@ -37,37 +39,31 @@ export default function Add() {
     const onSave = () => {
 
         if(!name || !surname || !phone) {
-            alert("Пожалуйста, заполните данные!");
-        };
+            alert("Пожалуйста, заполните форму");
+        }
 
         const phoneNumber = /^[0-9]+$/;
-
         if(!phoneNumber.test(phone)) {
             alert("Пожалуйста, введите корректный номер");
             return;
         }
 
-        let list = sessionStorage.getItem('list');
-        if(!list) {
-            list = [];
-        } else {
-            list = JSON.parse(list)
-        }
+        const newItem = {
+            name,
+            surname,
+            phone,
+        };
 
-        list.push({
-                name,
-                surname,
-                phone
-        })
+        dispatch(addItem(newItem));
 
-
-        sessionStorage.setItem("list", JSON.stringify(list));
-        navigateTo('/');
         openModal();
+        navigateTo('/');
+
     }
 
 
     return (
+        <Container>
         <div className='form'>
             <Form className='form-content'>
                 <InputField value={name} onChange={handleNameChange} type='text' name='name' placeholder='Your name'/>
@@ -78,25 +74,31 @@ export default function Add() {
 
             <Modal isOpen={modalIsOpen}
                 onRequestClose={closeModal}>
-                <div>
-                    <h2>Вы точно хотите сохранить данные?</h2>
-                    <Button onClick={() => {
-                        closeModal();
-                        onSave();
-                    }}>Да</Button>
-                    <Button onClick={closeModal}>Отмена</Button>
-                </div>
+                <ModalDataContainer>
+                    <div className='modal-data'>
+                        <h2>Вы точно хотите сохранить данные?</h2>
+                        <Button onClick={() => { onSave(); closeModal(); }}>Yes</Button>
+                        <Button onClick={closeModal}>Cancel</Button>
+                    </div>
+                </ModalDataContainer>
             </Modal>
 
         </div>
+        </Container>
     )
 }
+
+const Container = styled.div`
+  background-image: linear-gradient(to top, #fad0c4 0%, #ffd1ff 100%);
+  min-height: 100vh; 
+`;
+
 
 const Form = styled('form-content')`
       height: 300px;
       background: white;
       border: 0 none;
-      border-radius: 0px;
+      border-radius: 20px;
       box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
       padding: 20px 30px;
       box-sizing: border-box;
@@ -108,7 +110,7 @@ const Form = styled('form-content')`
 const InputField = styled.input`
       height: 40px;
       border: 1px solid #ccc;
-      border-radius: 0px;
+      border-radius: 5px;
       margin-bottom: 10px;
       width: 100%;
       box-sizing: border-box;
@@ -125,8 +127,7 @@ const InputField = styled.input`
 
 const Button = styled.button`
       width: 200px;
-      background: #ee0979;
-      font-weight: bold;
+       background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);      font-weight: bold;
       color: white;
       border: 0 none;
       border-radius: 25px;
@@ -139,3 +140,20 @@ const Button = styled.button`
         box-shadow: 0 0 0 2px white, 0 0 0 3px #ee0979
       }
     `
+
+const ModalDataContainer = styled.div`
+  justify-content: center;
+  display: flex;
+  background-image: linear-gradient(to top, #feada6 0%, #f5efef 100%);
+  height: 80vh;
+  align-items: center;
+  
+  .modal-data {
+    width: 500px;
+    height: 150px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+`;

@@ -1,32 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import HomeButton from "../components/HomeButton";
 import Modal from "react-modal";
+import { useState } from "react";
+import HomeButton from "../components/HomeButton";
+import GoToAddBtn from "../components/GoToAddBtn";
+
+import { deleteItem, updateItem } from "../actions/actions";
+import { useSelector, useDispatch } from "react-redux";
+
 
 const List = () => {
-    const [data, setData] = useState([]);
+    const data = useSelector(state => state.items);
+    const dispatch = useDispatch();
+
+    const handleDelete = (index) => {
+        dispatch(deleteItem(index));
+    };
+
     const [isOpenModal, setModalIsOpen] = useState(false);
     const [editedIndex, setEditedIndex] = useState(-1);
     const [updatedPerson, setUpdatedPerson] = useState({ name: "", surname: "", phone: "" });
-
-
-    useEffect(() => {
-        let list = sessionStorage.getItem("list");
-        if (!list) {
-            list = [];
-        } else {
-            list = JSON.parse(list);
-        }
-        setData(list);
-    }, []);
-
-    const handleDelete = (index) => {
-        const newData = [...data];
-
-        newData.splice(index, 1);
-        setData(newData);
-        sessionStorage.setItem("list", JSON.stringify(newData));
-    };
 
 
     const handleChange = (index) => {
@@ -36,15 +29,19 @@ const List = () => {
     };
 
     const saveChanges = () => {
-        const newData = [...data];
-        newData[editedIndex] = updatedPerson;
-        setData(newData);
-        sessionStorage.setItem("list", JSON.stringify(newData));
+        const phoneNumber = /^[0-9]+$/;
+        if (!phoneNumber.test(updatedPerson.phone)) {
+            alert("Please enter a valid phone number");
+            return;
+        }
+
+        dispatch(updateItem(editedIndex, updatedPerson));
         setModalIsOpen(false);
     };
 
-
     return (
+        <Container>
+
         <div>
             <Table>
                 <thead>
@@ -67,10 +64,8 @@ const List = () => {
                         </TableCell>
                     </TableRow>
                 ))}
-
                 </tbody>
             </Table>
-
 
             <Modal isOpen={isOpenModal} onRequestClose={() => setModalIsOpen(false)}>
                 <Title>Изменить данные</Title>
@@ -93,19 +88,25 @@ const List = () => {
                 <Button onClick={() => setModalIsOpen(false)}>Отмена</Button>
             </Modal>
 
-            <HomeButton >Вернуться на главную</HomeButton>
+            <HomeButton>Вернуться на главную</HomeButton>
+            <GoToAddBtn>Добавить пользователя</GoToAddBtn>
         </div>
+        </Container>
     );
 };
+
+const Container = styled.div`
+  background-image: linear-gradient(to top, #fad0c4 0%, #ffd1ff 100%);
+  min-height: 100vh; 
+`;
 
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
+
 `;
 
 const TableRow = styled.tr`
- 
   &:nth-child(even) {
     background-color: rgba(250, 200, 235, 0.27);
   }
@@ -115,6 +116,9 @@ const TableCell = styled.td`
   border: 1px solid #c4c2c2;
   padding: 8px;
   text-align: left;
+  color: #000000;
+  font-weight: 600;
+  font-size: 18px;
 `;
 
 const Button = styled.button`
@@ -129,6 +133,7 @@ const Button = styled.button`
   border-radius: 4px;
   cursor: pointer;
   margin-right: 20px;
+  margin-bottom: 50px;
 
   &:hover {
     background-color: #c75a52;
@@ -144,7 +149,7 @@ const ChangedInput = styled.input`
 `;
 
 const Title = styled.h2`
-  color: #fd887f ;
+  color: #fd887f;
 `;
 
 const TitleTable = styled.th`
